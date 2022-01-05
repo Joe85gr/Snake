@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using Domain;
 using UnityEngine;
 
 public class Snake : MonoBehaviour
 {
+    public PlayerName playerName;
     private Vector2 _direction = Vector2.right;
     private static List<Transform> _snakeBody;
     private const int StartLenght = 4;
@@ -13,18 +15,22 @@ public class Snake : MonoBehaviour
     {
         var score = (_snakeBody.Count - 5) * 3 * (Time.timeScale * 10);
 
-        if (score > (float) Level.Level1 && score < (float) Level.Level2) Time.timeScale = 1.1f;
-        else if (score > (float) Level.Level2 && score < (float) Level.Level3) Time.timeScale = 1.2f;
-        else if (score > (float) Level.Level3 && score < (float) Level.Level4) Time.timeScale = 1.3f;
-        else if (score > (float) Level.Level4 && score < (float) Level.Level5) Time.timeScale = 1.4f;
-        else if (score > (float) Level.Level5) Time.timeScale = 1.6f;
+        Time.timeScale = Speed.Get(score);
 
         return score;
+    }
+
+    public void ResetGame()
+    {
+        Time.timeScale = 1f;
+        ResetSnake();
+        InitialiseSnake();
     }
 
     private void Start()
     {
         _snakeBody = new List<Transform> {transform};
+        //var scores = SaveSystem.Load();
         InitialiseSnake();
     }
 
@@ -44,27 +50,18 @@ public class Snake : MonoBehaviour
 
     private void FixedUpdate()
     {
-        for (var i = _snakeBody.Count - 1; i > 0; i--)
-        {
-            _snakeBody[i].position = _snakeBody[i - 1].position;
-        }
-
-        var transform1 = transform;
-        var position = transform1.position;
-
-        position = new Vector3(
-            position.x + (_direction.x / 2),
-            position.y + (_direction.y / 2),
-            0.0f
-        );
-
-        transform1.position = position;
+        MoveSnake();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Food")) Grow();
-        else if (other.CompareTag("Walls")) ResetSnake();
+        else if (other.CompareTag("Walls"))
+        {
+            var score = GetScore();
+            Time.timeScale = 0f;
+            playerName.Show(score);
+        }
     }
 
     private void InitialiseSnake()
@@ -75,6 +72,25 @@ public class Snake : MonoBehaviour
         {
             Grow();
         }
+    }
+
+    private void MoveSnake()
+    {
+        for (var i = _snakeBody.Count - 1; i > 0; i--)
+        {
+            _snakeBody[i].position = _snakeBody[i - 1].position;
+        }
+
+        var tempTransform = transform;
+        var position = tempTransform.position;
+
+        position = new Vector3(
+            position.x + (_direction.x / 2),
+            position.y + (_direction.y / 2),
+            0.0f
+        );
+
+        tempTransform.position = position;
     }
 
     private void Grow()
@@ -98,7 +114,5 @@ public class Snake : MonoBehaviour
         transform.position = Vector3.zero;
 
         Time.timeScale = 1f;
-
-        InitialiseSnake();
     }
 }

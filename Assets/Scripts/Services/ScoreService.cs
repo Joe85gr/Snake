@@ -34,7 +34,7 @@ namespace Services
             scoreHeader.SetActive(false);
         }
 
-        private List<(string Name, float Score)> GetScores()
+        private static List<(string Name, float Score)> GetScores()
         {
             var scores = SaveService.Load()
                 .Scores
@@ -53,7 +53,7 @@ namespace Services
             headerRow.score.text = headerRow.score.name.ToUpper();
         }
 
-        private void GenerateRows(List<(string Name, float Score)> scores)
+        private void GenerateRows(IReadOnlyList<(string Name, float Score)> scores)
         {
             for (var i = 0; i < scores.Count; i++)
             {

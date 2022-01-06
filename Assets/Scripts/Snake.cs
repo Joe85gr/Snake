@@ -8,6 +8,7 @@ public class Snake : MonoBehaviour
     private Vector2 _direction = Vector2.right;
     private static List<Transform> _snakeBody;
     private const int StartLenght = 4;
+    private static bool _gameOver;
 
     public Transform segmentPrefab;
 
@@ -15,7 +16,7 @@ public class Snake : MonoBehaviour
     {
         var score = (_snakeBody.Count - 5) * 3 * (Time.timeScale * 10);
 
-        Time.timeScale = Speed.Get(score);
+        if (_gameOver == false) Time.timeScale = Speed.Get(score);
 
         return score;
     }
@@ -58,8 +59,9 @@ public class Snake : MonoBehaviour
         if (other.CompareTag("Food")) Grow();
         else if (other.CompareTag("Walls"))
         {
-            var score = GetScore();
             Time.timeScale = 0f;
+            _gameOver = true;
+            var score = GetScore();
             playerName.Show(score);
         }
     }
@@ -102,6 +104,8 @@ public class Snake : MonoBehaviour
 
     private void ResetSnake()
     {
+        
+        
         for (var i = 1; i < _snakeBody.Count; i++)
         {
             Destroy(_snakeBody[i].gameObject);
@@ -114,5 +118,6 @@ public class Snake : MonoBehaviour
         transform.position = Vector3.zero;
 
         Time.timeScale = 1f;
+        _gameOver = false;
     }
 }

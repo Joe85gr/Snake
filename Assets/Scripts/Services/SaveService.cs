@@ -44,8 +44,7 @@ namespace Services
 
         private static string GetSavePath()
         {
-            Debug.Log($"{Application.persistentDataPath}/{SaveFileName}");
-            return $"{Application.persistentDataPath}/{SaveFileName}" ;
+            return $"{Application.persistentDataPath}/{SaveFileName}";
         }
     }
 }
